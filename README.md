@@ -14,7 +14,6 @@ Plateforme web d'automatisation de la planification et du suivi mensuel de l'exp
 
 - [Contexte](#contexte)
 - [Fonctionnalités](#fonctionnalités)
-- [Captures d'écran](#captures-décran)
 - [Architecture](#architecture)
 - [Les 5 niveaux opérationnels](#les-5-niveaux-opérationnels)
 - [Modèle de données](#modèle-de-données)
@@ -47,25 +46,6 @@ Avant ce projet, la planification mensuelle de l'exploitation minière (décapag
 - 📊 **Diagramme de Gantt mensuel** (prévu vs réel), export image et Excel
 - 📈 **Tableau de bord analytique** type Power BI (production prévue/réalisée, répartition par section, état des tranchées)
 
-## Captures d'écran
-
-> Placez vos images dans `docs/screenshots/` avec ces noms pour que les liens ci-dessous fonctionnent tels quels.
-
-| Connexion | Tableau de bord |
-|---|---|
-| ![Connexion](docs/screenshots/log.png) | ![Tableau de bord](docs/screenshots/tab_bord.png) |
-
-| Programme annuel | Panneaux |
-|---|---|
-| ![Programme annuel](docs/screenshots/prog_ann.png) | ![Panneaux](docs/screenshots/panneau.png) |
-
-| Saisie mensuelle | Planning Gantt |
-|---|---|
-| ![Saisie mensuelle](docs/screenshots/saisi_men.png) | ![Gantt](docs/screenshots/gant.png) |
-
-| Tâches & événements | Suivi des performances |
-|---|---|
-| ![Tâches](docs/screenshots/tach_event.png) | ![Suivi](docs/screenshots/suivi_1.png) |
 
 ## Architecture
 
@@ -212,8 +192,6 @@ ocp-planification/
 │   │   ├── nav.js           # Garde d'authentification, filtrage par rôle
 │   │   └── logos/
 │   └── pages/
-├── docs/
-│   └── screenshots/
 └── README.md
 ```
 
@@ -234,7 +212,7 @@ ocp-planification/
 
 ## Auteure
 
-**Hafsa El Mahdi**
+**Hafsa El-Mahdi**
 Élève ingénieure — École Nationale des Sciences Appliquées d'Al Hoceima (ENSAH)
 Stage PFA — Site minier, Groupe OCP
 
