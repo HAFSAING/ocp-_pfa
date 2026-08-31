@@ -27,7 +27,7 @@
     { href: "saisie-mensuelle.html", label: "Saisie mensuelle", icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>', roles: "admin,contributeur" },
     { href: "taches.html", label: "Tâches & Événements", icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>', roles: "admin,contributeur" },
     { section: "Suivi" },
-    { href: "suivi-powerbi.html", label: "Suivi (Power BI)", icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
+    { href: "suivi-powerbi.html", label: "Suivi ", icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
   ];
 
   const pageCourante = window.location.pathname.split("/").pop();
