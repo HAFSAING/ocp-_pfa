@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tâches & Événements — OCP Planification</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      font-family: var(--font-mono); letter-spacing: 0.04em;
+    }
+    .type-decapage  { background: rgba(198,138,63,0.15); color: #8a5f2b; }
+    .type-foration  { background: rgba(22,62,44,0.12); color: #163e2c; }
+    .type-sautage   { background: rgba(220,53,69,0.12); color: #8f2833; }
+    .type-criblage  { background: rgba(226,121,84,0.15); color: #9a4a2a; }
+    .type-transport { background: rgba(19,165,56,0.12); color: #0a6b24; }
+    .type-reprise   { background: rgba(157,176,191,0.2); color: #4a6070; }
+
+    .statut-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+    }
+    .statut-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .evt-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 9px; border-radius: 10px; font-size: 11px;
+      font-family: var(--font-mono); font-weight: 600;
+    }
+    .evt-pluie          { background: rgba(13,202,240,0.12); color: #055160; }
+    .evt-panne_bull     { background: rgba(255,193,7,0.15); color: #664d03; }
+    .evt-panne_sondeuse { background: rgba(255,193,7,0.15); color: #664d03; }
+    .evt-arret_technique{ background: rgba(108,117,125,0.12); color: #2b2f32; }
+    .evt-autre          { background: rgba(108,117,125,0.1); color: #495057; }
+
+    .tache-row:hover { background: rgba(174,204,83,0.06); cursor: pointer; }
+    .tache-row.selected { background: rgba(174,204,83,0.12); }
+
+    .section-tabs {
+      display: flex; gap: 2px; margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab-btn {
+      padding: 10px 18px; border: none; background: none;
+      font-family: var(--font-body); font-size: 14px; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 180ms;
+    }
+    .tab-btn.active { color: var(--forest-green); border-bottom-color: var(--corporate-green); font-weight: 600; }
+    .tab-btn:hover { color: var(--forest-green); }
+
+    .impact-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+      color: var(--orange); background: rgba(226,121,84,0.1);
+      padding: 2px 7px; border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="topbar">
+      <div class="topbar-brand-group">
+        <img src="../assets/ocph.png" alt="OCP" class="topbar-logo">
+        <div class="topbar-divider"></div>
+        <span class="topbar-brand">Bureau Géologie — <strong>Planification</strong></span>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="user-initials">—</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="user-name">—</div>
+          <div class="topbar-user-role" id="user-role">—</div>
+        </div>
+        <button class="btn-logout" id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <div class="dashboard-body">
+      <nav class="sidebar"></nav>
+
+      <main class="main-content">
+        <div class="content-inner">
+          <div class="page-head">
+            <div>
+              <h1 class="page-title">Tâches & Événements</h1>
+              <p class="page-subtitle">Planifier les phases d'exploitation et signaler les perturbations.</p>
+            </div>
+          </div>
+          <div id="alert-zone"></div>
+
+          <!-- Sélecteurs cascade -->
+          <section class="panel">
+            <div class="panel-body">
+              <div class="selector-row">
+                <div class="field">
+                  <label for="programme-select">Programme</label>
+                  <select id="programme-select"><option value="" disabled selected>Sélectionner</option></select>
+                </div>
+                <div class="field">
+                  <label for="panneau-select">Panneau</label>
+                  <select id="panneau-select" disabled><option value="" disabled selected>Sélectionner</option></select>
+                </div>
+                <div class="field">
+                  <label for="tranchee-select">Tranchée</label>
+                  <select id="tranchee-select" disabled><option value="" disabled selected>Sélectionner</option></select>
+                </div>
+                <div style="display:flex;align-items:flex-end;">
+                  <button class="btn-primary btn-compact" id="ajouter-tache-btn" disabled>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Ajouter une tâche
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulaire ajout tâche -->
+            <div class="panel-body" id="tache-form-wrap" hidden style="border-top:1px solid var(--gray-200);background:var(--gray-100);">
+              <form id="tache-form">
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="type-tache">Phase de travail</label>
+                    <select id="type-tache" required>
+                      <option value="" disabled selected>Choisir une phase</option>
+                      <option value="decapage">Décapage stérile</option>
+                      <option value="foration">Foration</option>
+                      <option value="sautage">Sautage</option>
+                      <option value="criblage">Criblage / Épierrage</option>
+                      <option value="transport">Transport phosphate</option>
+                      <option value="reprise">Reprise</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="ordre-tache">Ordre</label>
+                    <input type="number" id="ordre-tache" step="1" min="1" placeholder="ex. 1">
+                    <div class="field-hint">Séquence d'exécution</div>
+                  </div>
+                  <div class="field">
+                    <label for="debut-prevu">Date début prévue</label>
+                    <input type="date" id="debut-prevu">
+                  </div>
+                  <div class="field">
+                    <label for="duree-jours">Durée (jours)</label>
+                    <input type="number" id="duree-jours" step="1" min="1" placeholder="ex. 13">
+                  </div>
+                  <div class="field">
+                    <label for="tache-commentaire">Commentaire (optionnel)</label>
+                    <input type="text" id="tache-commentaire" placeholder="Notes...">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-primary btn-compact">Enregistrer la tâche</button>
+                  <button type="button" class="btn-secondary" id="annuler-tache">Annuler</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Tableau tâches -->
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px;">Ordre</th>
+                    <th>Phase</th>
+                    <th>Début prévu</th>
+                    <th>Fin prévue</th>
+                    <th>Durée</th>
+                    <th>Statut</th>
+                    <th>Perturbation</th>
+                    <th style="width:140px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="taches-tbody">
+                  <tr><td colspan="8" style="text-align:center;color:var(--text-faint);padding:36px;">Sélectionne un programme, un panneau et une tranchée</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Événements perturbateurs -->
+          <section class="panel" id="evt-section" hidden>
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title" id="evt-titre">Événements perturbateurs</h2>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:3px;" id="evt-sous-titre">Signaler un arrêt ou retard sur cette tâche</p>
+              </div>
+              <button class="btn-secondary" id="ajouter-evt-btn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Signaler un événement
+              </button>
+            </div>
+
+            <div class="panel-body" id="evt-form-wrap" hidden style="background:var(--gray-100);border-bottom:1px solid var(--gray-200);">
+              <form id="evt-form">
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="type-evt">Type d'événement</label>
+                    <select id="type-evt" required>
+                      <option value="pluie">Pluie / Intempéries</option>
+                      <option value="panne_bull">Panne bull (engin de décapage)</option>
+                      <option value="panne_sondeuse">Panne sondeuse (foration)</option>
+                      <option value="arret_technique">Arrêt technique / Maintenance</option>
+                      <option value="autre">Autre (préciser dans commentaire)</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="evt-debut">Date début</label>
+                    <input type="date" id="evt-debut" required>
+                  </div>
+                  <div class="field">
+                    <label for="evt-fin">Date fin (optionnel)</label>
+                    <input type="date" id="evt-fin">
+                  </div>
+                  <div class="field">
+                    <label for="evt-impact">Impact (jours perdus)</label>
+                    <input type="number" id="evt-impact" step="0.5" min="0" required placeholder="ex. 2">
+                    <div class="field-hint">Nombre de jours de retard générés</div>
+                  </div>
+                  <div class="field">
+                    <label for="evt-commentaire">Description</label>
+                    <input type="text" id="evt-commentaire" placeholder="Détails de l'événement...">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-primary btn-compact">Enregistrer l'événement</button>
+                  <button type="button" class="btn-secondary" id="annuler-evt">Annuler</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Type</th><th>Début</th><th>Fin</th><th>Jours perdus</th><th>Description</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="evt-tbody">
+                  <tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:24px;">Aucun événement signalé</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/taches.js"></script>
+</body>
+</html>

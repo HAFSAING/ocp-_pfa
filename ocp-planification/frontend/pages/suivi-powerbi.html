@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord analytique — OCP Planification</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="topbar">
+      <div class="topbar-brand-group">
+        <img src="../assets/ocph.png" alt="OCP" class="topbar-logo">
+        <div class="topbar-divider"></div>
+        <span class="topbar-brand">Bureau Géologie — <strong>Planification</strong></span>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="user-initials">—</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="user-name">—</div>
+          <div class="topbar-user-role" id="user-role">—</div>
+        </div>
+        <button class="btn-logout" id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+    </header>
+    <div class="dashboard-body">
+      <nav class="sidebar"></nav>
+
+      <main class="main-content">
+        <div class="content-inner">
+          <div class="page-head">
+            <div>
+              <h1 class="page-title">Tableau de bord analytique</h1>
+              <p class="page-subtitle">Suivi des performances de production — prévu vs réalisé.</p>
+            </div>
+            <div class="field" style="min-width:260px;margin-bottom:0;">
+              <select id="programme-select">
+                <option value="" disabled selected>Sélectionner un programme</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="alert-zone"></div>
+
+          <!-- KPI Cards -->
+          <div class="stats-grid" id="kpi-grid" style="display:none;">
+            <div class="stat-card">
+              <div class="stat-card-head">
+                <div class="stat-card-label">Production totale prévue</div>
+                <div class="stat-card-icon">
+                  <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="kpi-prevu">—</div>
+              <div class="stat-card-note" id="kpi-unite">Ktsm</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-head">
+                <div class="stat-card-label">Production totale réalisée</div>
+                <div class="stat-card-icon">
+                  <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="kpi-realise">—</div>
+              <div class="stat-card-note">Cumulé sur la période</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-head">
+                <div class="stat-card-label">Taux d'accomplissement</div>
+                <div class="stat-card-icon">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="kpi-taux">—</div>
+              <div class="stat-card-note">Réalisé / Prévu</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-head">
+                <div class="stat-card-label">Tranchées en cours</div>
+                <div class="stat-card-icon">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="kpi-tranchees">—</div>
+              <div class="stat-card-note" id="kpi-tranchees-detail">—</div>
+            </div>
+          </div>
+
+          <!-- Graphiques -->
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;" id="charts-row" style="display:none;">
+            <section class="panel">
+              <div class="panel-head"><h2 class="panel-title">Prévu vs Réalisé par mois</h2></div>
+              <div class="panel-body">
+                <canvas id="chart-mensuel" height="120"></canvas>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head"><h2 class="panel-title">Répartition par section</h2></div>
+              <div class="panel-body">
+                <canvas id="chart-section" height="200"></canvas>
+              </div>
+            </section>
+          </div>
+
+          <!-- État tranchées -->
+          <section class="panel" id="tranchees-panel" style="display:none;">
+            <div class="panel-head"><h2 class="panel-title">État des tranchées</h2></div>
+            <div class="panel-body">
+              <canvas id="chart-tranchees" height="60"></canvas>
+            </div>
+          </section>
+
+          <!-- Placeholder -->
+          <section class="panel" id="placeholder">
+            <div class="panel-body" style="text-align:center;padding:60px 24px;">
+              <div style="font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--forest-green);margin-bottom:12px;">
+                Sélectionne un programme pour afficher le tableau de bord
+              </div>
+              <p style="font-size:14px;color:var(--text-muted);">Les indicateurs et graphiques apparaîtront ici.</p>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/suivi-powerbi.js"></script>
+</body>
+</html>

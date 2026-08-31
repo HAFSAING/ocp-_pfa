@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Gantt — OCP Planification</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <style>
+    .mois-select-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
+    .btn-mois {
+      padding:6px 13px; border:1px solid var(--border); border-radius:20px;
+      background:#fff; font-size:12px; font-weight:500; cursor:pointer;
+      color:var(--text-muted); transition:all 180ms;
+    }
+    .btn-mois:hover { border-color:var(--corporate-green); color:var(--forest-green); }
+    .btn-mois.active { background:var(--forest-green); color:#fff; border-color:var(--forest-green); font-weight:600; }
+    .gantt-legend { display:flex; flex-wrap:wrap; gap:14px; padding:14px 20px; border-top:1px solid var(--gray-200); }
+    .gantt-legend-item { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); }
+    .gantt-legend-swatch { width:13px; height:13px; border-radius:3px; flex-shrink:0; }
+    .export-btn-group { display:flex; gap:8px; align-items:center; }
+    .btn-export-img {
+      display:flex; align-items:center; gap:7px;
+      padding:9px 16px; border:1px solid var(--border-light); border-radius:var(--radius);
+      background:var(--white); color:var(--gray-700); font-family:var(--font-body);
+      font-size:13px; font-weight:500; cursor:pointer; transition:all 180ms;
+    }
+    .btn-export-img:hover { border-color:var(--forest-green); color:var(--forest-green); background:var(--gray-100); }
+    .btn-export-img svg { flex-shrink:0; }
+    .export-hint { font-size:11px; color:var(--text-faint); font-family:var(--font-mono); margin-top:4px; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="topbar">
+      <div class="topbar-brand-group">
+        <img src="../assets/ocph.png" alt="OCP" class="topbar-logo">
+        <div class="topbar-divider"></div>
+        <span class="topbar-brand">Bureau Géologie — <strong>Planification</strong></span>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="user-initials">—</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="user-name">—</div>
+          <div class="topbar-user-role" id="user-role">—</div>
+        </div>
+        <button class="btn-logout" id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <div class="dashboard-body">
+      <nav class="sidebar"></nav>
+
+      <main class="main-content">
+        <div class="content-inner">
+          <div class="page-head">
+            <div>
+              <h1 class="page-title">Planning Gantt</h1>
+              <p class="page-subtitle">Enchaînement des phases d'exploitation — prévu vs réel par mois.</p>
+            </div>
+            <div class="export-btn-group">
+              <!-- Bouton export image avec explication -->
+              <div>
+                <button class="btn-export-img" id="export-img-btn" disabled title="Télécharger le planning du mois en image PNG">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  Télécharger l'image
+                </button>
+                <div class="export-hint">Sauvegarde le planning du mois en PNG</div>
+              </div>
+              <!-- Bouton export Excel -->
+              <div>
+                <button class="btn-primary btn-compact" id="export-btn" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                  </svg>
+                  Exporter Excel
+                </button>
+                <div class="export-hint">Données complètes du programme</div>
+              </div>
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-body">
+              <div style="margin-bottom:16px;">
+                <label style="display:block;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:8px;">Programme</label>
+                <select id="programme-select" style="width:100%;max-width:400px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--white);color:var(--text-primary);">
+                  <option value="" disabled selected>Sélectionner un programme</option>
+                </select>
+              </div>
+              <div class="mois-select-row" id="mois-buttons"></div>
+            </div>
+
+            <div style="overflow-x:auto;overflow-y:auto;max-height:560px;border-top:1px solid var(--border);" id="gantt-chart">
+              <div id="gantt-empty" style="text-align:center;color:var(--text-faint);padding:60px;font-size:14px;">
+                Sélectionne un programme pour afficher le planning Gantt.
+              </div>
+            </div>
+
+            <div class="gantt-legend" id="gantt-legend" style="display:none;">
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#c68a3f;"></span>Décapage stérile</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#163e2c;"></span>Foration</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#dc3545;"></span>Sautage</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#e27954;"></span>Criblage</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#13a538;"></span>Transport phosphate</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:#9db0bf;"></span>Reprise</div>
+              <div class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:rgba(220,53,69,0.3);border:1px dashed #dc3545;"></span>Zone perturbée</div>
+              <div class="gantt-legend-item">
+                <svg width="20" height="12"><line x1="0" y1="6" x2="20" y2="6" stroke="#dc3545" stroke-width="2"/></svg>
+                Aujourd'hui
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/gantt.js"></script>
+</body>
+</html>
