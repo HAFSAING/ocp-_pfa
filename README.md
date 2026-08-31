@@ -1,9 +1,6 @@
 # OCP Planification
 
-test
-
-
-Plateforme web d'automatisation de la planification et du suivi mensuel de l'exploitation des mines de phosphate, développée dans le cadre d'un stage de Projet de Fin d'Année (PFA) au sein du **Bureau Géologie** du Groupe OCP.
+Plateforme web d'automatisation de la planification et du suivi mensuel de l'exploitation des mines de phosphate, développée dans le cadre d'un stage de Projet de Fin d'Année (PFA) sur un **site minier** du Groupe OCP.
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
@@ -17,6 +14,7 @@ Plateforme web d'automatisation de la planification et du suivi mensuel de l'exp
 
 - [Contexte](#contexte)
 - [Fonctionnalités](#fonctionnalités)
+- [Captures d'écran](#captures-décran)
 - [Architecture](#architecture)
 - [Les 5 niveaux opérationnels](#les-5-niveaux-opérationnels)
 - [Modèle de données](#modèle-de-données)
@@ -36,7 +34,7 @@ Plateforme web d'automatisation de la planification et du suivi mensuel de l'exp
 
 Avant ce projet, la planification mensuelle de l'exploitation minière (décapage, foration, sautage, transport du phosphate) était réalisée manuellement à l'aide de feuilles de calcul : saisie des paramètres opérationnels, recalcul manuel des indicateurs (surfaces, volumes, tonnages, jours de travail), et suivi du planning sans visualisation centralisée.
 
-**OCP Planification** automatise ce processus de bout en bout : saisie unique des données, calculs automatiques fiables, visualisation du planning sous forme de diagramme de Gantt, et tableau de bord de suivi des performances — tout en respectant fidèlement la logique métier du Bureau Géologie.
+**OCP Planification** automatise ce processus de bout en bout : saisie unique des données, calculs automatiques fiables, visualisation du planning sous forme de diagramme de Gantt, et tableau de bord de suivi des performances — tout en respectant fidèlement la logique métier du site.
 
 ## Fonctionnalités
 
@@ -49,6 +47,25 @@ Avant ce projet, la planification mensuelle de l'exploitation minière (décapag
 - 📊 **Diagramme de Gantt mensuel** (prévu vs réel), export image et Excel
 - 📈 **Tableau de bord analytique** type Power BI (production prévue/réalisée, répartition par section, état des tranchées)
 
+## Captures d'écran
+
+> Placez vos images dans `docs/screenshots/` avec ces noms pour que les liens ci-dessous fonctionnent tels quels.
+
+| Connexion | Tableau de bord |
+|---|---|
+| ![Connexion](docs/screenshots/log.png) | ![Tableau de bord](docs/screenshots/tab_bord.png) |
+
+| Programme annuel | Panneaux |
+|---|---|
+| ![Programme annuel](docs/screenshots/prog_ann.png) | ![Panneaux](docs/screenshots/panneau.png) |
+
+| Saisie mensuelle | Planning Gantt |
+|---|---|
+| ![Saisie mensuelle](docs/screenshots/saisi_men.png) | ![Gantt](docs/screenshots/gant.png) |
+
+| Tâches & événements | Suivi des performances |
+|---|---|
+| ![Tâches](docs/screenshots/tach_event.png) | ![Suivi](docs/screenshots/suivi_1.png) |
 
 ## Architecture
 
@@ -110,7 +127,7 @@ Le module `app/services/moteur_calcul.py` centralise l'ensemble des formules de 
 - Heures machine bulldozer (HMB)
 - Jours de travail prévus
 
-Ces calculs s'appuient sur **6 coefficients configurables** (`coef_MT`, `coef_BT`, `coef_TBT`, densités, foisonnement), stockés dans `parametres_calcul`. Les valeurs actuelles sont des **exemples de développement**, en attente de validation définitive par le Bureau Géologie.
+Ces calculs s'appuient sur **6 coefficients configurables** (`coef_MT`, `coef_BT`, `coef_TBT`, densités, foisonnement), stockés dans `parametres_calcul`. Les valeurs actuelles sont des **exemples de développement**, en attente de validation définitive par les équipes du site.
 
 > Le formulaire de saisie distingue toujours clairement les champs **saisis** par l'utilisateur (dimensions, rendements, dosage) des champs **calculés** automatiquement par le moteur.
 
@@ -155,9 +172,8 @@ Créer ensuite la base de données PostgreSQL et exécuter les scripts d'initial
 **Backend** (à lancer depuis le dossier `backend/`) :
 
 ```bash
-cd \ocp-planification\backend
-venv\Scripts\activate
-uvicorn app.main:app --reload
+cd backend
+uvicorn main:app --reload
 ```
 
 **Frontend** (à lancer depuis le dossier `frontend/`) :
@@ -196,6 +212,8 @@ ocp-planification/
 │   │   ├── nav.js           # Garde d'authentification, filtrage par rôle
 │   │   └── logos/
 │   └── pages/
+├── docs/
+│   └── screenshots/
 └── README.md
 ```
 
@@ -210,15 +228,15 @@ ocp-planification/
 
 - [ ] Intégration d'un tableau de bord **Power BI** embarqué
 - [ ] **Import / export Excel** (via `openpyxl` / `pandas`)
-- [ ] Validation définitive des **coefficients de calcul** avec le Bureau Géologie
+- [ ] Validation définitive des **coefficients de calcul** avec les équipes du site
 - [ ] Renforcement du contrôle des rôles côté serveur
 - [ ] Notifications automatiques de rappel de saisie (via APScheduler)
 
 ## Auteure
 
-**Hafsa El-Mahdi**
+**Hafsa El Mahdi**
 Élève ingénieure — École Nationale des Sciences Appliquées d'Al Hoceima (ENSAH)
-Stage PFA — Bureau Géologie, Groupe OCP
+Stage PFA — Site minier, Groupe OCP
 
 ---
 
