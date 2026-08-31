@@ -213,7 +213,7 @@ ocp-planification/
 
 ## Auteure
 
-**Hafsa El Mahdi**
+**Hafsa El-Mahdi**
 Élève ingénieure — École Nationale des Sciences Appliquées d'Al Hoceima (ENSAH)
 Stage PFA — Bureau Géologie, Groupe OCP
 
